@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare Plus - Medical Appointment Scheduling System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Animated Medical Background -->
+    <div class="animated-background" id="animatedBackground"></div>
+
+    <!-- Login/Signup Page  -->
+    <div id="auth-page">
+        <div class="auth-container">
+            <h1><i class="fas fa-hospital-alt"></i> HealthCare Plus</h1>
+            <p> Medical Appointment Scheduling System</p>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showAuthForm('login')"><i class="fas fa-sign-in-alt"></i>
+                    Login</button>
+                <button class="auth-tab" onclick="showAuthForm('signup')"><i class="fas fa-user-plus"></i> Sign
+                    Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form active">
+                <h2>Login to Your Account</h2>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                <button class="btn btn-primary" onclick="login()" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <p style="margin-top: 15px; color: #666;">
+                    Don't have an account? <a href="#" onclick="showAuthForm('signup')"
+                        style="color: var(--primary-color); font-weight: 600;">Sign up here</a>
+                </p>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signup-form" class="auth-form">
+                <h2>Create New Account</h2>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="signup-name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="signup-password" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user-md"></i> Select Role</label>
+                    <div class="role-selector">
+                        <button type="button" class="role-btn doctor" onclick="selectRole('doctor')">
+                            <i class="fas fa-user-md"></i> Doctor
+                        </button>
+                        <button type="button" class="role-btn staff" onclick="selectRole('staff')">
+                            <i class="fas fa-user-nurse"></i> Staff
+                        </button>
+                    </div>
+                    <input type="hidden" id="selected-role" value="">
+                </div>
+                <button class="btn btn-primary" onclick="signup()" style="width: 100%;">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                <p style="margin-top: 15px; color: #666;">
+                    Already have an account? <a href="#" onclick="showAuthForm('login')"
+                        style="color: var(--primary-color); font-weight: 600;">Login here</a>
+                </p>
+            </div>
+
+            <!-- Alert Message -->
+            <div id="auth-alert" class="alert alert-error hidden" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Main Application (Hidden by default) -->
+    <div id="main-app" class="hidden">
+        <div class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-area">
+                <div class="logo">
+                    <i class="fas fa-hospital-alt"></i>
+                    <span>HealthCare Plus</span>
+                </div>
+                <div class="tagline"> Medical Appointment Scheduling System</div>
+            </div>
+
+            <div id="sidebar-menu">
+            </div>
+
+            <button class="menu-item logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="menu-text">Logout</span>
+            </button>
+        </div>
+
+        <div class="content" id="main-content">
+            <div class="page-header">
+                <h1 class="page-title" id="page-title">Dashboard</h1>
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <div class="user-details">
+                        <div class="name" id="user-name">User Name</div>
+                        <div class="role" id="user-role">Role</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Patients Tab (Doctor only) -->
+            <div id="my-patients" class="tab-content">
+                <h2><i class="fas fa-users"></i> My Patients</h2>
+                <div class="alert alert-info">
+                    <strong><i class="fas fa-user-md"></i> Doctor's View:</strong> This page shows only your patients
+                    and appointments. Click on a patient to view detailed history including vital signs.
+                </div>
+
+                <div class="filter-options">
+                    <button class="filter-btn active" onclick="filterDoctorAppointments('today')">
+                        <i class="fas fa-calendar-day"></i> Today
+                    </button>
+                    <button class="filter-btn" onclick="filterDoctorAppointments('emergency')">
+                        <i class="fas fa-ambulance"></i> Emergency
+                    </button>
+                    <button class="filter-btn" onclick="filterDoctorAppointments('all')">
+                        <i class="fas fa-users"></i> All Patients
+                    </button>
+                </div>
+
+                <div id="doctor-patients-list">
+                    <p>Loading your patients...</p>
+                </div>
+            </div>
+
+            <!-- Book Appointment Tab -->
+            <div id="book-appointment" class="tab-content">
+                <h2><i class="fas fa-calendar-plus"></i> Book an Appointment</h2>
+                <div class="stats-grid" style="margin-top: 20px;">
+                    <div class="stat-card floating" style="animation-delay: 0s;">
+                        <h3 id="totalDoctors">12</h3>
+                        <p>Available Doctors</p>
+                    </div>
+                    <div class="stat-card floating"
+                        style="background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%); animation-delay: 0.2s;">
+                        <h3 id="todayAppointments">28</h3>
+                        <p>Today's Appointments</p>
+                    </div>
+                    <div class="stat-card floating"
+                        style="background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%); animation-delay: 0.4s;">
+                        <h3 id="avgWaitTime">15 min</h3>
+                        <p>Avg Wait Time</p>
+                    </div>
+                </div>
+
+                <form id="appointmentForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Patient Name *</label>
+                        <input type="text" id="patientName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-birthday-cake"></i> Age *</label>
+                        <input type="number" id="patientAge" required min="1" max="120">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Contact Number *</label>
+                        <input type="tel" id="patientContact" required placeholder="+8801XXXXXXXXX"
+                            onblur="validateAndFormatPhone('patientContact')" oninput="formatPhoneNumber(this)">
+                        <small style="color: #666;">Format: +8801XXXXXXXXX</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-stethoscope"></i> Problem/Symptoms *</label>
+                        <textarea id="patientProblem" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> Preferred Time (Optional)</label>
+                        <input type="time" id="preferredTime" min="08:00" max="17:00">
+                        <small style="color: #666;">We'll show slots closest to your preferred time (08:00 AM - 05:00
+                            PM)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-exclamation-triangle"></i> Priority Level *</label>
+                        <select id="priorityLevel" onchange="updatePriorityInfo()">
+                            <option value="normal">Normal</option>
+                            <option value="high">High Priority</option>
+                            <option value="emergency">Emergency</option>
+                        </select>
+                        <div id="priorityInfo" class="alert alert-info" style="margin-top: 10px; display: none;"></div>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="button" class="btn btn-primary" onclick="showDoctorSelection()">
+                            <i class="fas fa-user-md"></i> Select Doctor
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="getAIRecommendation()">
+                            <i class="fas fa-robot"></i> Get AI Recommendation
+                        </button>
+                    </div>
+                </form>
+
+                <div id="doctorSelection" class="doctor-selection" style="display: none; margin-top: 30px;">
+                    <h3><i class="fas fa-user-md"></i> Select Your Preferred Doctor</h3>
+                    <div class="specialty-filter">
+                        <label><i class="fas fa-filter"></i> Filter by Specialty:</label>
+                        <select id="specialtyFilter" onchange="filterDoctors()">
+                            <option value="all">All Specialties</option>
+                        </select>
+                    </div>
+                    <div id="doctorSelectionList" class="doctor-grid"></div>
+                </div>
+
+                <div id="doctorRecommendation" style="display: none;"></div>
+                <div id="timeSlotSelection" style="display: none;"></div>
+            </div>
+
+            <!-- Doctor Info Tab -->
+            <div id="doctor-info" class="tab-content">
+                <h2><i class="fas fa-user-md"></i> Our Doctors</h2>
+                <div class="search-box">
+                    <input type="text" id="doctorSearch" placeholder="Search by name, specialty, or expertise..."
+                        onkeyup="searchDoctors()">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                </div>
+
+                <div id="doctorList" class="doctor-grid"></div>
+
+                <div style="margin-top:20px;">
+                    <h4><i class="fas fa-info-circle"></i> Doctor Information</h4>
+                    <p>Find and book appointments with our expert doctors.</p>
+                </div>
+            </div>
+
+            <!-- Test Booking Tab -->
+            <div id="test-booking" class="tab-content">
+                <h2><i class="fas fa-vial"></i> Book Medical Tests</h2>
+                <form id="testBookingForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Patient Name *</label>
+                        <input type="text" id="testPatientName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-birthday-cake"></i> Patient Age *</label>
+                        <input type="number" id="testPatientAge" required min="1" max="120">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Contact Number *</label>
+                        <input type="tel" id="testPatientContact" required placeholder="+8801XXXXXXXXX"
+                            onblur="validateAndFormatPhone('testPatientContact')" oninput="formatPhoneNumber(this)">
+                        <small style="color: #666;">Format: +8801XXXXXXXXX</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-vial"></i> Select Tests (Multiple Selection) *</label>
+                        <div id="testSelection"></div>
+                    </div>
+
+                    <div class="fee-display">Total Fee: ৳<span id="totalTestFee">0</span></div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Preferred Date *</label>
+                        <input type="date" id="testDate" required>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="showTestPayment()">
+                        <i class="fas fa-credit-card"></i> Proceed to Payment
+                    </button>
+                </form>
+            </div>
+
+            <!-- Test Reports Tab -->
+            <div id="test-reports" class="tab-content">
+                <h2><i class="fas fa-file-medical-alt"></i> Check Test Reports</h2>
+                <div class="search-box">
+                    <input type="text" id="reportSearch" placeholder="Enter your contact number or booking ID..."
+                        onkeyup="searchReports()">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                </div>
+                <div id="reportList"></div>
+            </div>
+
+            <!-- Emergency Queue Tab -->
+            <div id="emergency" class="tab-content">
+                <h2><i class="fas fa-ambulance"></i> Emergency Queue Management</h2>
+                <div id="emergencyQueue"></div>
+            </div>
+
+            <!-- My Appointments Tab -->
+            <div id="my-appointments" class="tab-content">
+                <h2 id="my-appointments-title"><i class="fas fa-calendar-check"></i> My Appointments</h2>
+
+                <div id="patient-appointments-view">
+                    <div class="search-box">
+                        <input type="text" id="myAppointmentSearch"
+                            placeholder="Enter your contact number (+8801XXXXXXXXX)..." onkeyup="searchMyAppointments()"
+                            onblur="validateAndFormatPhone('myAppointmentSearch')">
+                        <span class="search-icon"><i class="fas fa-search"></i></span>
+                    </div>
+                    <div id="myAppointmentList"></div>
+                </div>
+            </div>
+
+            <!-- Patient History Tab (For Staff) -->
+            <div id="patient-history" class="tab-content">
+                <h2><i class="fas fa-history"></i> Patient Medical History</h2>
+                <div class="alert alert-info">
+                    <strong><i class="fas fa-user-nurse"></i> Staff View:</strong> Search for patients to view their
+                    complete medical history including vital signs records.
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="patientSearch" placeholder="Enter patient name or contact number..."
+                        onkeyup="searchPatients()">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                </div>
+
+                <div id="patientList"></div>
+            </div>
+
+            <!-- Payment History Tab -->
+            <div id="payment-history" class="tab-content">
+                <h2><i class="fas fa-money-bill-wave"></i> Payment History & System</h2>
+
+                <div class="payment-stats-grid">
+                    <div class="payment-stat-card floating" style="animation-delay: 0s;">
+                        <h4 id="totalPayments">0</h4>
+                        <p>Total Payments</p>
+                    </div>
+                    <div class="payment-stat-card floating"
+                        style="background: linear-gradient(135deg, var(--accent-color) 0%, #34d399 100%); animation-delay: 0.2s;">
+                        <h4 id="totalCash">৳0</h4>
+                        <p>Total Cash</p>
+                    </div>
+                    <div class="payment-stat-card floating"
+                        style="background: linear-gradient(135deg, var(--danger-color) 0%, #f87171 100%); animation-delay: 0.4s;">
+                        <h4 id="flaggedPayments">0</h4>
+                        <p>Flagged Payments</p>
+                    </div>
+                    <div class="payment-stat-card floating"
+                        style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); animation-delay: 0.6s;">
+                        <h4 id="successRate">100%</h4>
+                        <p>Success Rate</p>
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="paymentSearch"
+                        placeholder="Search by payment ID, patient name, or contact..." onkeyup="searchPayments()">
+                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                </div>
+
+                <div id="paymentRecordsList" style="margin-top: 20px;">
+                </div>
+            </div>
+
+            <div class="footer"
+                style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #64748b; font-size: 0.9rem;">
+                <p>HealthCare Plus &copy; 2025 - Medical Appointment Scheduling System</p>
+                <p style="font-size: 0.8rem; margin-top: 5px;">For emergency, call: <strong>+880 123-456-7890</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vital Signs Modal -->
+    <div id="vitalSignsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-heartbeat"></i> Record Patient Vital Signs</h3>
+                <button class="close-btn" onclick="closeVitalSignsModal()">&times;</button>
+            </div>
+            <div id="vitalSignsContent">
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient History Modal -->
+    <div id="patientHistoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-bar"></i> Complete Patient History</h3>
+                <button class="close-btn" onclick="closePatientHistoryModal()">&times;</button>
+            </div>
+            <div id="patientHistoryContent" class="patient-detail-view">
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-credit-card"></i> Payment Processing</h3>
+                <button class="close-btn" onclick="closePaymentModal()">&times;</button>
+            </div>
+
+            <div id="paymentDetails" class="payment-details">
+            </div>
+
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label><i class="fas fa-money-bill-wave"></i> Payment Method *</label>
+                    <select id="paymentMethod" required>
+                        <option value="">Select Payment Method</option>
+                        <option value="cash"><i class="fas fa-money-bill"></i> Cash</option>
+                        <option value="card"><i class="fas fa-credit-card"></i> Card</option>
+                        <option value="mobile_banking"><i class="fas fa-mobile-alt"></i> Mobile Banking</option>
+                    </select>
+                </div>
+
+                <div id="mobileBankingDetails" style="display: none;">
+                    <div class="form-group">
+                        <label><i class="fas fa-receipt"></i> Transaction ID</label>
+                        <input type="text" id="transactionId" placeholder="Enter transaction ID">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-money-bill-alt"></i> Amount Received (৳) *</label>
+                    <input type="number" id="receivedAmount" required min="0" step="0.01">
+                </div>
+
+                <div id="changeAmount"
+                    style="display: none; background: #d1fae5; padding: 15px; border-radius: 10px; margin: 15px 0; border: 2px solid var(--accent-color);">
+                    <strong><i class="fas fa-exchange-alt"></i> Change to Return: ৳<span
+                            id="changeValue">0.00</span></strong>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-user-check"></i> Received By *</label>
+                    <input type="text" id="receivedBy" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-sticky-note"></i> Payment Notes (Optional)</label>
+                    <textarea id="paymentNotes" rows="3"
+                        placeholder="Any special notes about this payment..."></textarea>
+                </div>
+
+                <div id="paymentAlert" class="alert hidden"></div>
+
+                <div style="display: flex; gap: 15px; margin-top: 25px;">
+                    <button type="button" class="btn btn-success" onclick="processPayment()" style="flex: 1;">
+                        <i class="fas fa-check-circle"></i> Process Payment
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="closePaymentModal()" style="flex: 1;">
+                        <i class="fas fa-times-circle"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
